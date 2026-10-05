@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pallet Retrieval Request</title>
+<style>
+body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#101318;color:#fff;margin:0}
+.wrap{max-width:620px;margin:auto;padding:18px}
+.card{background:#1b222b;padding:20px;border-radius:18px}
+h2{margin-top:0}
+label{display:block;font-weight:700;margin:14px 0 6px}
+input,select,textarea,button{width:100%;box-sizing:border-box;padding:13px;border-radius:11px;font:inherit}
+input,select,textarea{background:#10151b;color:#fff;border:1px solid #47515e}
+textarea{min-height:85px}
+.preview{white-space:pre-wrap;background:#10151b;padding:13px;border-radius:11px;margin-top:17px}
+button{border:0;font-weight:800;margin-top:12px;cursor:pointer}
+.primary{background:#f2f2f2;color:#111}
+.sent{background:#b9e7c1;color:#102814}
+.note{color:#bcc4ce;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+<h2>📦 Pallet Retrieval Request</h2>
+<p>Fill the request out once, then send the same request separately to both pallet-retrieval workers.</p>
+
+<label>Michael's phone number</label>
+<input id="p1" inputmode="tel" placeholder="Phone number">
+
+<label>Partner's phone number</label>
+<input id="p2" inputmode="tel" placeholder="Phone number">
+
+<label>Location *</label>
+<input id="loc" placeholder="Example: 2R-059-247-40">
+
+<label>Problem</label>
+<select id="prob">
+<option>Needs pallet retrieval</option>
+<option>Pallet sticking out</option>
+<option>Wrong pallet</option>
+<option>Empty pallet</option>
+<option>Damaged pallet</option>
+<option>Location needs fixing</option>
+<option>Other</option>
+</select>
+
+<label>Priority</label>
+<select id="pri"><option>Normal</option><option>Urgent</option></select>
+
+<label>Reported by</label>
+<input id="who" placeholder="Name or initials">
+
+<label>Notes</label>
+<textarea id="notes" placeholder="Optional details"></textarea>
+
+<div id="pre" class="preview"></div>
+
+<button id="b1" class="primary" onclick="sendOne('p1','b1','Michael')">📩 Send to Michael</button>
+<button id="b2" class="primary" onclick="sendOne('p2','b2','Partner')">📩 Send to Partner</button>
+
+<p class="note">Each button opens a separate text conversation with the same request already filled in. After returning to this page, use the second button for the other recipient.</p>
+</div></div>
+
+<script>
+function message(){
+ return `PALLET RETRIEVAL REQUEST
+Location: ${loc.value.trim()||"(not entered)"}
+Problem: ${prob.value}
+Priority: ${pri.value.toUpperCase()}
+Reported by: ${who.value.trim()||"(not entered)"}
+Notes: ${notes.value.trim()||"None"}`;
+}
+function update(){pre.textContent=message();}
+["loc","prob","pri","who","notes"].forEach(id=>document.getElementById(id).addEventListener("input",update));
+function sendOne(phoneId,buttonId,name){
+ let phone=document.getElementById(phoneId).value.replace(/[^\d+]/g,"");
+ if(!phone){alert("Enter "+name+"'s phone number.");return;}
+ if(!loc.value.trim()){alert("Enter a pallet location first.");return;}
+ let b=document.getElementById(buttonId);
+ b.textContent="✓ Opened for "+name;
+ b.classList.remove("primary"); b.classList.add("sent");
+ window.location.href=`sms:${phone}?body=${encodeURIComponent(message())}`;
+}
+update();
+</script>
+</body></html>
